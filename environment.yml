@@ -1,0 +1,14 @@
+name: genai-rag 
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pip
+  - pip:
+      - langchain 
+      - openai 
+      - langchain-community
+      - yt_dlp
+      - chromadb 
+      - pypdf 
+      - tiktoken 
