@@ -2,11 +2,11 @@
 
 **Context:**
 
-We are a new team specialising in LLMs and RAG.   
+We are a team specializing in LLMs and RAG, passionate about webtoons!
 
 **Objective:**
 
-Find a specific topic in which RAG can make an LLM more efficient.
+To create a specialized chatbot that can answer questions, provide recommendations, and discuss all things webtoon-related, using the power of RAG.
 
 
 ## **Access our Deployed Application !** 
@@ -59,6 +59,25 @@ gcloud config set project $PROJECT_ID
 ├── README.md
 └── .gitignore
 ```
+
+
+
+**Key Improvements and Considerations**
+
+*   **RAG Emphasis:** The introduction and other sections highlight the importance of RAG.
+*   **New Pages:** The structure is set up for the new pages (RAG Implementation, Chatbot, Architecture).
+*   **Dependencies:** The `environment.yml` file includes potential dependencies for web scraping and vector databases.
+
+**Next Steps**
+
+1.  **Implement RAG:** Build out the `/src/components/rag_implementation.py` file to show how we're using RAG.
+2.  **Create Chatbot Interface:** Design the chatbot interface in `/src/components/chatbot.py`.
+3.  **Data Acquisition:** Decide how you'll get webtoon data (scraping, API, manual curation).
+4.  **Vector Database:** Choose a vector database and integrate it.
+5.  **LLM Integration:** Connect your LLM to the chatbot.
+6.  **Refine Content:** Continue to improve the text and explanations.
+
+
 
 ## Contributors 
 - Cyrena Ramdani

@@ -1,14 +1,17 @@
-name: genai-rag 
+name: genai-rag
 channels:
   - conda-forge
   - defaults
 dependencies:
   - pip
   - pip:
-      - langchain 
-      - openai 
+      - langchain
+      - openai
       - langchain-community
       - yt_dlp
-      - chromadb 
-      - pypdf 
-      - tiktoken 
+      - pypdf
+      - tiktoken
+      - streamlit
+      - beautifulsoup4 # For web scraping (if needed)
+      - requests # For web scraping (if needed)
+      - chromadb # or another vector database
