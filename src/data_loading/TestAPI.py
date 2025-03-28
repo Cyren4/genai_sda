@@ -56,6 +56,23 @@ def save_recipes_to_json(categories_dict, output_filename):
                 if recipe_data:  # Vérification que la recette a bien été récupérée
                     all_recipes.append(recipe_data)
 
+    # Fonction pour sauvegarder toutes les recettes dans un fichier JSON
+def save_recipes_to_json(categories_dict, output_filename):
+    all_recipes = []
+    scraped_recipes_count = 0  # Compteur de recettes scrappées
+
+    for category, keywords in categories_dict.items():
+        for keyword in keywords:
+            print(f"Scraping recipes for category: {category}, keyword: {keyword}")
+            recipe_links = search_recipes_by_keyword(keyword)
+            
+            for link in recipe_links:
+                print(f"Scraping recipe: {link}")
+                recipe_data = get_recipe_data(link)
+                if recipe_data:  # Vérification que la recette a bien été récupérée
+                    all_recipes.append(recipe_data)
+                    scraped_recipes_count += 1  # Incrémenter le compteur de recettes
+
     # Sauvegarde des données dans un fichier JSON
     pwd = os.getcwd() 
     output_path = os.path.join(pwd + '/src/data_loading', output_filename)  # Change le chemin si nécessaire
@@ -65,6 +82,10 @@ def save_recipes_to_json(categories_dict, output_filename):
         print(f"Les recettes ont été sauvegardées dans {output_path}")
     except IOError as e:
         print(f"Erreur lors de la sauvegarde du fichier JSON: {e}")
+
+    # Afficher le nombre de recettes scrappées
+    print(f"Nombre total de recettes scrappées: {scraped_recipes_count}")
+
 
 # Route Flask pour démarrer le scraping et sauvegarder dans un fichier JSON
 @app.route('/scrape_recipes', methods=['GET'])
@@ -95,5 +116,3 @@ if __name__ == '__main__':
 
 #http://127.0.0.1:5000/scrape_recipes
 
-#'/Users/yoavcohen/Desktop/genai_sda/src/data_loading/TestAPI.py/data_loading/all_recipes.json'
-#/Users/yoavcohen/Desktop/genai_sda/src/data_loading
