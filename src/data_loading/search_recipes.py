@@ -1,56 +1,51 @@
-# Catégorie : Entrées
-entrees = [
-    "Salade", "Soupe", "Quiche", "Bruschetta", "Tapenade", "Velouté", "Carpaccio", "Terrine", 
-    "Gazpacho", "Tartare", "Omelette", "Houmous", "Caviar d’aubergine", "Samossa", "Accras", 
-    "Rillettes", "Blinis", "Mousse salée", "Gougères", "Tzatziki"
-]
+def create_culinary_dictionary():
+    """
+    Creates a dictionary containing various culinary categories and their associated lists of items.
 
-# Catégorie : Plats principaux
-plats_principaux = [
-    "Poulet rôti", "Bœuf bourguignon", "Lasagnes", "Couscous", "Paella", "Ratatouille", "Blanquette de veau", 
-    "Coq au vin", "Steak frites", "Curry de légumes", "Tajine", "Risotto", "Chili con carne", "Quiche lorraine", 
-    "Tartiflette", "Hachis parmentier", "Boulettes de viande", "Rôti de porc", "Gratin dauphinois", "Filet de saumon"
-]
+    Returns:
+        dict: A dictionary where keys are culinary categories (e.g., "Entrees", "Main Courses")
+              and values are lists of items within those categories.
+    """
 
-# Catégorie : Desserts
-desserts = [
-    "Gâteau au chocolat", "Tarte aux pommes", "Mousse au chocolat", "Crème brûlée", "Panna cotta", "Tiramisu", 
-    "Clafoutis", "Cheesecake", "Île flottante", "Crêpes", "Beignets", "Macarons", "Brownie", "Éclair au chocolat", 
-    "Charlotte aux fraises", "Flan pâtissier", "Millefeuille", "Galette des rois", "Baba au rhum", "Fondant au chocolat"
-]
+    culinary_dictionary = {
+        "Entrees": [
+            "Salad", "Soup", "Quiche", "Bruschetta", "Tapenade", "Velouté", "Carpaccio", "Terrine",
+            "Gazpacho", "Tartare", "Omelette", "Hummus", "Eggplant Caviar", "Samosa", "Accras",
+            "Rillettes", "Blinis", "Savory Mousse", "Gougères", "Tzatziki"
+        ],
+        "Main Courses": [
+            "Roast Chicken", "Beef Bourguignon", "Lasagna", "Couscous", "Paella", "Ratatouille", "Veal Blanquette",
+            "Coq au Vin", "Steak Frites", "Vegetable Curry", "Tajine", "Risotto", "Chili con Carne", "Quiche Lorraine",
+            "Tartiflette", "Shepherd's Pie", "Meatballs", "Roast Pork", "Gratin Dauphinois", "Salmon Fillet"
+        ],
+        "Desserts": [
+            "Chocolate Cake", "Apple Pie", "Chocolate Mousse", "Crème Brûlée", "Panna Cotta", "Tiramisu",
+            "Clafoutis", "Cheesecake", "Floating Island", "Crepes", "Beignets", "Macarons", "Brownie", "Chocolate Éclair",
+            "Strawberry Charlotte", "Custard Flan", "Millefeuille", "King Cake", "Rum Baba", "Chocolate Fondant"
+        ],
+        "Side Dishes": [
+            "Mashed Potatoes", "Pilaf Rice", "French Fries", "Green Beans", "Ratatouille", "Semolina",
+            "Dauphine Potatoes", "Risotto", "Vegetable Gratin", "Polenta", "Tabouleh", "Green Salad",
+            "Zucchini Flan", "Sautéed Mushrooms", "Vegetable Tian", "Bulgur", "Sautéed Spinach",
+            "Coleslaw", "Lentils", "Sautéed Potatoes"
+        ],
+        "Basic Ingredients": [
+            "Flour", "Sugar", "Salt", "Pepper", "Butter", "Olive Oil", "Milk", "Eggs", "Yeast", "Fresh Cream",
+            "Honey", "Vinegar", "Tomatoes", "Onions", "Garlic", "Herbs de Provence", "Paprika", "Chili", "Mustard", "Broth"
+        ],
+        "Beverages": [
+            "Water", "Coffee", "Tea", "Orange Juice", "Apple Juice", "Lemonade", "Soda", "Red Wine", "White Wine", "Beer",
+            "Cocktail", "Smoothie", "Milkshake", "Hot Chocolate", "Infusion", "Cappuccino", "Mojito", "Spritz", "Sangria", "Cider"
+        ],
+        "Spices and Condiments": [
+            "Curry", "Turmeric", "Cumin", "Cinnamon", "Ginger", "Espelette Pepper", "Paprika", "Cloves",
+            "Nutmeg", "Cardamom", "Star Anise", "Tarragon", "Basil", "Coriander", "Thyme", "Rosemary",
+            "Parsley", "Oregano", "Fennel", "Bay Leaf"
+        ]
+    }
 
-# Catégorie : Accompagnements
-accompagnements = [
-    "Purée de pommes de terre", "Riz pilaf", "Frites", "Haricots verts", "Ratatouille", "Semoule", 
-    "Pommes dauphines", "Risotto", "Gratin de légumes", "Polenta", "Taboulé", "Salade verte", 
-    "Flan de courgettes", "Poêlée de champignons", "Tian de légumes", "Boulgour", "Épinards sautés", 
-    "Coleslaw", "Lentilles", "Pommes de terre sautées"
-]
+    return culinary_dictionary
 
-# Catégorie : Ingrédients de base
-ingredients = [
-    "Farine", "Sucre", "Sel", "Poivre", "Beurre", "Huile d'olive", "Lait", "Œufs", "Levure", "Crème fraîche",
-    "Miel", "Vinaigre", "Tomates", "Oignons", "Ail", "Herbes de Provence", "Paprika", "Piment", "Moutarde", "Bouillon"
-]
-
-# Catégorie : Boissons
-boissons = [
-    "Eau", "Café", "Thé", "Jus d’orange", "Jus de pomme", "Limonade", "Soda", "Vin rouge", "Vin blanc", "Bière",
-    "Cocktail", "Smoothie", "Milkshake", "Chocolat chaud", "Infusion", "Cappuccino", "Mojito", "Spritz", "Sangria", "Cidre"
-]
-
-# Catégorie : Épices et condiments
-epices_condiments = [
-    "Curry", "Curcuma", "Cumin", "Cannelle", "Gingembre", "Piment d'Espelette", "Paprika", "Clous de girofle", 
-    "Noix de muscade", "Cardamome", "Anis étoilé", "Estragon", "Basilic", "Coriandre", "Thym", "Romarin", 
-    "Persil", "Origan", "Fenouil", "Laurier"
-]
-
-# Affichage des listes
-print("Entrées :", entrees)
-print("Plats principaux :", plats_principaux)
-print("Desserts :", desserts)
-print("Accompagnements :", accompagnements)
-print("Ingrédients de base :", ingredients)
-print("Boissons :", boissons)
-print("Épices et condiments :", epices_condiments)
+# Example usage:
+culinary_dict = create_culinary_dictionary()
+print(culinary_dict)

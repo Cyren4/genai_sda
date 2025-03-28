@@ -91,3 +91,5 @@ This project is a student project fulfilling the requirements of a GenAI Course.
 
 
 ## Source documentation
+
+- [Marmiton scrapper](https://github.com/remaudcorentin-dev/python-marmiton/tree/master)
