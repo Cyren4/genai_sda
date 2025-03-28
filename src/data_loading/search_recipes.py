@@ -1,11 +1,11 @@
 from recipe_scrapers import scrape_me
 
-scraper = scrape_me("https://www.allrecipes.com/recipe/158968/spinach-and-feta-turkey-burgers/")
-scraper.title()
+scraper = scrape_me("https://www.marmiton.org/recettes/recette_le-crumble-light-de-jeanne_27728.aspx")
+print(scraper.title())
 scraper.instructions()
-scraper.to_json()
+print(scraper.to_json())
 # for a complete list of methods:
-help(scraper)
+# help(scraper)
 
 # cree un dictionaire de rechercher a faire das marmithon pour alimenter notre RAG 
 def create_culinary_dictionary():
