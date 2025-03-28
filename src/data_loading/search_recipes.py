@@ -5,9 +5,10 @@ print(scraper.title())
 scraper.instructions()
 print(scraper.to_json())
 # for a complete list of methods:
-# help(scraper)
+#help(scraper)
 
-# cree un dictionaire de rechercher a faire das marmithon pour alimenter notre RAG 
+
+# cree un dictionaire de rechercher a faire dans marmiton pour alimenter notre RAG 
 def create_culinary_dictionary():
     """
     Creates a dictionary containing various culinary categories and their associated lists of items,
