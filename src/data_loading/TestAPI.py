@@ -57,7 +57,8 @@ def save_recipes_to_json(categories_dict, output_filename):
                     all_recipes.append(recipe_data)
 
     # Sauvegarde des données dans un fichier JSON
-    output_path = os.path.join('/Users/yoavcohen/Desktop/genai_sda/src/data_loading', output_filename)  # Change le chemin si nécessaire
+    pwd = os.getcwd() 
+    output_path = os.path.join(pwd + '/src/data_loading', output_filename)  # Change le chemin si nécessaire
     try:
         with open(output_path, 'w', encoding='utf-8') as json_file:
             json.dump(all_recipes, json_file, ensure_ascii=False, indent=4)
@@ -93,3 +94,6 @@ if __name__ == '__main__':
 
 
 #http://127.0.0.1:5000/scrape_recipes
+
+#'/Users/yoavcohen/Desktop/genai_sda/src/data_loading/TestAPI.py/data_loading/all_recipes.json'
+#/Users/yoavcohen/Desktop/genai_sda/src/data_loading
