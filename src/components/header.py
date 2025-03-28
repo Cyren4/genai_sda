@@ -29,8 +29,6 @@ def display_contributor():
     ### 👩🏻‍🍳 **Contributors** :
     - *Cyrena Ramdani*
     - *Yoav COHEN*
-    - *Hoang Thuy Duong VU*
-    - *Salma LAHBATI*
     """)
 
 # Page config

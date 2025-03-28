@@ -1,4 +1,6 @@
 import streamlit as st
+# Import custom components
+from components.header import  display_contributor
 
 # === PAGE 1 : INTRODUCTION ===
 def introduction():
@@ -37,3 +39,4 @@ def introduction():
 
     Explore the different sections of our application to see the Cooking Assistant in action! 🚀
     """)
+    display_contributor()

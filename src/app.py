@@ -20,7 +20,7 @@ def main():
                                    "🏗️ Architecture of the Cooking Assistant"])
     # select_page(main_page, run_ID)
     select_page(main_page)
-    display_contributor()
+    # display_contributor()
 
 
 if __name__ == "__main__":
