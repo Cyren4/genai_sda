@@ -4,25 +4,25 @@ import streamlit as st
 def introduction():
     """Displays the INTRODUCTION page of the app."""
 
-    st.header("📖 Welcome to the Webtoon Chatbot!")
+    st.header("🍲 Welcome to the Cooking Assistant!")
 
     st.markdown("""
     ### **📌 Context**
-    Webtoons have exploded in popularity, offering a vast library of diverse stories and art styles. Navigating this world can be overwhelming, and that's where our Webtoon Chatbot comes in!
+    Cooking can be a delightful journey, but it can also be challenging to find the right recipes, understand cooking techniques, or figure out what to make with the ingredients you have. That's where our Cooking Assistant comes in!
 
     ### **🎯 Objective**
     Our goal is to create a specialized chatbot that can:
-    - Answer questions about specific webtoons.
-    - Recommend webtoons based on user preferences.
-    - Discuss webtoon genres, trends, and creators.
-    - Provide insights into the webtoon industry.
+    - Answer questions about specific recipes.
+    - Recommend recipes based on user preferences and dietary restrictions.
+    - Discuss cooking techniques, ingredients, and cuisines.
+    - Provide insights into the culinary world.
 
     ---
 
     ### **⚙️ How it Works: RAG (Retrieval-Augmented Generation)**
     This chatbot is powered by RAG, a cutting-edge AI technique that combines the strengths of:
-    - **Retrieval:** Searching a knowledge base for relevant information.
-    - **Generation:** Using a language model to create human-like responses.
+    - **Retrieval:** Searching a knowledge base for relevant recipes and cooking information.
+    - **Generation:** Using a language model to create human-like responses and recipe suggestions.
 
     By grounding its responses in real-world data, the chatbot can provide accurate and informative answers.
 
@@ -32,8 +32,8 @@ def introduction():
     We are using a combination of state-of-the-art techniques, including:
 
     - **Large Language Models (LLMs):** To understand and generate human-like text.
-    - **Vector Databases:** To store and efficiently retrieve information about webtoons.
-    - **Web Scraping (Potentially):** To gather data from webtoon platforms.
+    - **Vector Databases:** To store and efficiently retrieve information about recipes and cooking techniques.
+    - **Web Scraping (Potentially):** To gather data from cooking websites and recipe databases.
 
-    Explore the different sections of our application to see the Webtoon Chatbot in action! 🚀
+    Explore the different sections of our application to see the Cooking Assistant in action! 🚀
     """)

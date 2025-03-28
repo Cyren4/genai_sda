@@ -2,15 +2,15 @@ import streamlit as st
 
 # Pop up content
 about_message = """
-### About Webtoon Chatbot Application
+### About Cooking Assistant Application
 
-This application showcases a specialized chatbot designed to provide information and engage in conversations about webtoons. It leverages Retrieval-Augmented Generation (RAG) to deliver accurate and relevant responses.
+This application showcases a specialized chatbot designed to provide information and engage in conversations about cooking. It leverages Retrieval-Augmented Generation (RAG) to deliver accurate and relevant responses.
 
 ### Need help? Here's how to get in touch:
 
-*   **Email Support:** support@webtoon-chatbot.com
-*   **FAQ:** webtoon-chatbot.com/faq
-*   **Documentation:** webtoon-chatbot.com/docs
+*   **Email Support:** support@cooking-assistant.com
+*   **FAQ:** cooking-assistant.com/faq
+*   **Documentation:** cooking-assistant.com/docs
 
 Please include the following information when contacting support:
 * A description of the problem you are experiencing.
@@ -19,14 +19,14 @@ Please include the following information when contacting support:
 """
 
 def display_header():
-    st.title("🎨 Webtoon Chatbot: Your Guide to the World of Webtoons")
+    st.title("🍳 Cooking Assistant: Your Guide to Culinary Creations")
 
 def display_contributor():
     """Displays the contributors section of the app."""
     st.markdown("""
     ---
 
-    ### 👩🏻‍💻 **Contributors** :
+    ### 👩🏻‍🍳 **Contributors** :
     - *Cyrena Ramdani*
     - *Yoav COHEN*
     - *Hoang Thuy Duong VU*
@@ -36,8 +36,8 @@ def display_contributor():
 # Page config
 def page_config():
     st.set_page_config(
-        page_title="Webtoon Chatbot",
-        page_icon="🎨",
+        page_title="Cooking Assistant",
+        page_icon="🍳",
         layout="centered",
         initial_sidebar_state="auto",
         menu_items={
