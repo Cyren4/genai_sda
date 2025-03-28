@@ -1,46 +1,47 @@
 def create_culinary_dictionary():
     """
-    Creates a dictionary containing various culinary categories and their associated lists of items.
+    Creates a dictionary containing various culinary categories and their associated lists of items,
+    based on the categories defined in the search_recipes.py file.
 
     Returns:
-        dict: A dictionary where keys are culinary categories (e.g., "Entrees", "Main Courses")
-              and values are lists of items within those categories.
+        dict: A dictionary where keys are culinary categories (in French) and values are lists of items
+              within those categories.
     """
 
     culinary_dictionary = {
-        "Entrees": [
-            "Salad", "Soup", "Quiche", "Bruschetta", "Tapenade", "Velouté", "Carpaccio", "Terrine",
-            "Gazpacho", "Tartare", "Omelette", "Hummus", "Eggplant Caviar", "Samosa", "Accras",
-            "Rillettes", "Blinis", "Savory Mousse", "Gougères", "Tzatziki"
+        "Entrées": [
+            "Salade", "Soupe", "Quiche", "Bruschetta", "Tapenade", "Velouté", "Carpaccio", "Terrine",
+            "Gazpacho", "Tartare", "Omelette", "Houmous", "Caviar d’aubergine", "Samossa", "Accras",
+            "Rillettes", "Blinis", "Mousse salée", "Gougères", "Tzatziki"
         ],
-        "Main Courses": [
-            "Roast Chicken", "Beef Bourguignon", "Lasagna", "Couscous", "Paella", "Ratatouille", "Veal Blanquette",
-            "Coq au Vin", "Steak Frites", "Vegetable Curry", "Tajine", "Risotto", "Chili con Carne", "Quiche Lorraine",
-            "Tartiflette", "Shepherd's Pie", "Meatballs", "Roast Pork", "Gratin Dauphinois", "Salmon Fillet"
+        "Plats principaux": [
+            "Poulet rôti", "Bœuf bourguignon", "Lasagnes", "Couscous", "Paella", "Ratatouille", "Blanquette de veau",
+            "Coq au vin", "Steak frites", "Curry de légumes", "Tajine", "Risotto", "Chili con carne", "Quiche lorraine",
+            "Tartiflette", "Hachis parmentier", "Boulettes de viande", "Rôti de porc", "Gratin dauphinois", "Filet de saumon"
         ],
         "Desserts": [
-            "Chocolate Cake", "Apple Pie", "Chocolate Mousse", "Crème Brûlée", "Panna Cotta", "Tiramisu",
-            "Clafoutis", "Cheesecake", "Floating Island", "Crepes", "Beignets", "Macarons", "Brownie", "Chocolate Éclair",
-            "Strawberry Charlotte", "Custard Flan", "Millefeuille", "King Cake", "Rum Baba", "Chocolate Fondant"
+            "Gâteau au chocolat", "Tarte aux pommes", "Mousse au chocolat", "Crème brûlée", "Panna cotta", "Tiramisu",
+            "Clafoutis", "Cheesecake", "Île flottante", "Crêpes", "Beignets", "Macarons", "Brownie", "Éclair au chocolat",
+            "Charlotte aux fraises", "Flan pâtissier", "Millefeuille", "Galette des rois", "Baba au rhum", "Fondant au chocolat"
         ],
-        "Side Dishes": [
-            "Mashed Potatoes", "Pilaf Rice", "French Fries", "Green Beans", "Ratatouille", "Semolina",
-            "Dauphine Potatoes", "Risotto", "Vegetable Gratin", "Polenta", "Tabouleh", "Green Salad",
-            "Zucchini Flan", "Sautéed Mushrooms", "Vegetable Tian", "Bulgur", "Sautéed Spinach",
-            "Coleslaw", "Lentils", "Sautéed Potatoes"
+        "Accompagnements": [
+            "Purée de pommes de terre", "Riz pilaf", "Frites", "Haricots verts", "Ratatouille", "Semoule",
+            "Pommes dauphines", "Risotto", "Gratin de légumes", "Polenta", "Taboulé", "Salade verte",
+            "Flan de courgettes", "Poêlée de champignons", "Tian de légumes", "Boulgour", "Épinards sautés",
+            "Coleslaw", "Lentilles", "Pommes de terre sautées"
         ],
-        "Basic Ingredients": [
-            "Flour", "Sugar", "Salt", "Pepper", "Butter", "Olive Oil", "Milk", "Eggs", "Yeast", "Fresh Cream",
-            "Honey", "Vinegar", "Tomatoes", "Onions", "Garlic", "Herbs de Provence", "Paprika", "Chili", "Mustard", "Broth"
+        "Ingrédients de base": [
+            "Farine", "Sucre", "Sel", "Poivre", "Beurre", "Huile d'olive", "Lait", "Œufs", "Levure", "Crème fraîche",
+            "Miel", "Vinaigre", "Tomates", "Oignons", "Ail", "Herbes de Provence", "Paprika", "Piment", "Moutarde", "Bouillon"
         ],
-        "Beverages": [
-            "Water", "Coffee", "Tea", "Orange Juice", "Apple Juice", "Lemonade", "Soda", "Red Wine", "White Wine", "Beer",
-            "Cocktail", "Smoothie", "Milkshake", "Hot Chocolate", "Infusion", "Cappuccino", "Mojito", "Spritz", "Sangria", "Cider"
+        "Boissons": [
+            "Eau", "Café", "Thé", "Jus d’orange", "Jus de pomme", "Limonade", "Soda", "Vin rouge", "Vin blanc", "Bière",
+            "Cocktail", "Smoothie", "Milkshake", "Chocolat chaud", "Infusion", "Cappuccino", "Mojito", "Spritz", "Sangria", "Cidre"
         ],
-        "Spices and Condiments": [
-            "Curry", "Turmeric", "Cumin", "Cinnamon", "Ginger", "Espelette Pepper", "Paprika", "Cloves",
-            "Nutmeg", "Cardamom", "Star Anise", "Tarragon", "Basil", "Coriander", "Thyme", "Rosemary",
-            "Parsley", "Oregano", "Fennel", "Bay Leaf"
+        "Épices et condiments": [
+            "Curry", "Curcuma", "Cumin", "Cannelle", "Gingembre", "Piment d'Espelette", "Paprika", "Clous de girofle",
+            "Noix de muscade", "Cardamome", "Anis étoilé", "Estragon", "Basilic", "Coriandre", "Thym", "Romarin",
+            "Persil", "Origan", "Fenouil", "Laurier"
         ]
     }
 
