@@ -1,3 +1,13 @@
+from recipe_scrapers import scrape_me
+
+scraper = scrape_me("https://www.allrecipes.com/recipe/158968/spinach-and-feta-turkey-burgers/")
+scraper.title()
+scraper.instructions()
+scraper.to_json()
+# for a complete list of methods:
+help(scraper)
+
+# cree un dictionaire de rechercher a faire das marmithon pour alimenter notre RAG 
 def create_culinary_dictionary():
     """
     Creates a dictionary containing various culinary categories and their associated lists of items,
@@ -48,5 +58,5 @@ def create_culinary_dictionary():
     return culinary_dictionary
 
 # Example usage:
-culinary_dict = create_culinary_dictionary()
-print(culinary_dict)
+# culinary_dict = create_culinary_dictionary()
+# print(culinary_dict)

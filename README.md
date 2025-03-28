@@ -82,9 +82,6 @@ gcloud config set project $PROJECT_ID
 ## Contributors 
 - Cyrena Ramdani
 - Yoav COHEN
-- Hoang Thuy Duong VU
-- Salma LAHBATI
-
 
 
 This project is a student project fulfilling the requirements of a GenAI Course.
