@@ -75,7 +75,7 @@ def save_recipes_to_json(categories_dict, output_filename):
 
     # Sauvegarde des données dans un fichier JSON
     pwd = os.getcwd() 
-    output_path = os.path.join(pwd + '/src/data_loading', output_filename)  # Change le chemin si nécessaire
+    output_path = os.path.join(pwd + '/data', output_filename)  # Change le chemin si nécessaire
     try:
         with open(output_path, 'w', encoding='utf-8') as json_file:
             json.dump(all_recipes, json_file, ensure_ascii=False, indent=4)
@@ -108,7 +108,7 @@ def scrape_recipes():
     # Sauvegarder les recettes dans un fichier JSON
     save_recipes_to_json(culinary_dict, "all_recipes.json")
 
-    return jsonify({"message": "Toutes les recettes ont été sauvegardées avec succès dans le fichier JSON."})
+    return jsonify({"message": "Toutes les recettes sont sauvegardees avec succes dans le fichier JSON."})
 
 if __name__ == '__main__':
     app.run(debug=True)

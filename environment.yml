@@ -16,3 +16,9 @@ dependencies:
       - requests # For web scraping (if needed)
       # - chromadb # or another vector database
       - recipe-scrapers
+      - flask
+      - bs4
+      - FAIS
+      - lark
+      - docarray
+      - panel 
