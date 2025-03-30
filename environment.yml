@@ -22,3 +22,7 @@ dependencies:
       - lark
       - docarray
       - panel 
+      - google
+      - google.genai
+      - python-dotenv
+      - google-generativeai

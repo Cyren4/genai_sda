@@ -2,19 +2,16 @@
 
 **Context:**
 
-We are a team specializing in LLMs and RAG, passionate about webtoons!
+We are a team specializing in LLMs and RAG, passionate about efficient food!
 
 **Objective:**
 
-To create a specialized chatbot that can answer questions, provide recommendations, and discuss all things webtoon-related, using the power of RAG.
-
-
-## **Access our Deployed Application !** 
-
-###  - [Application - TBD]() 
+To create a specialized chatbot that can answer questions, provide recommendations, and discuss all things food-related, using the power of RAG.
+Also allow you to get recipes based on what you have in youre fridge and will soon enable you to add your own recipe to its knowledge base. 
 
 **Project Overview report:**
-- Canvas : - [GenAI Presentation - TBD]() 
+- Canvas - [Can RAG help you eat better](https://www.canva.com/design/DAGi3urCNRc/qY44G1L6n32EEHqqGp8YuA/edit?utm_content=DAGi3urCNRc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton) 
+- Source Code - [GenAI project](https://github.com/Cyren4/genai_sda) 
 
 ## Set-up Project 
 
@@ -39,44 +36,21 @@ streamlit run src/app.py
 ```
 
 
-## Manual Deployement to Cloud Run 
 
-- Set up environment variable : 
-```bash
-export PROJECT_ID=<my-project-id>
-export REGION=europe-west1
-```
-
-- Connect to GCP and set the right project:
-```bash
-gcloud auth login
-gcloud config set project $PROJECT_ID
-
-```
-
-## File structure 
+## File structure (TBD)
 ```
 ├── README.md
 └── .gitignore
 ```
 
 
-
-**Key Improvements and Considerations**
-
-*   **RAG Emphasis:** The introduction and other sections highlight the importance of RAG.
-*   **New Pages:** The structure is set up for the new pages (RAG Implementation, Chatbot, Architecture).
-*   **Dependencies:** The `environment.yml` file includes potential dependencies for web scraping and vector databases.
-
 **Next Steps**
 
-1.  **Implement RAG:** Build out the `/src/components/rag_implementation.py` file to show how we're using RAG.
+1.  **Implement RAG:** Check out the `/src/rag` and `data_loading` folder to see how we're using implementing RAG.
 2.  **Create Chatbot Interface:** Design the chatbot interface in `/src/components/chatbot.py`.
-3.  **Data Acquisition:** Decide how you'll get webtoon data (scraping, API, manual curation).
-4.  **Vector Database:** Choose a vector database and integrate it.
-5.  **LLM Integration:** Connect your LLM to the chatbot.
-6.  **Refine Content:** Continue to improve the text and explanations.
-
+3.  **Data Acquisition:**Check out the `data_loading` folder to see how we're getting recipes data (scraping, API, manual curation).
+4.  **Vector Database:** We tried various a vector database and integrate it.
+5.  **LLM Integration:** Connect your LLM to the chatbot (qwe tried with Mistral, gemini and gemma)
 
 
 ## Contributors 
@@ -90,3 +64,4 @@ This project is a student project fulfilling the requirements of a GenAI Course.
 ## Source documentation
 
 - [Marmiton scrapper](https://github.com/remaudcorentin-dev/python-marmiton/tree/master)
+- [Gemini embedding](https://ai.google.dev/gemini-api/docs/models#text-embedding)
