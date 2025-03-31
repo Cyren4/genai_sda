@@ -32,16 +32,16 @@ def display_contributor():
     """)
 
 # Configuration de la page
-def page_config():
-    st.set_page_config(
-        page_title="Cooking Assistant",
-        page_icon="🍳",
-        layout="centered",
-        initial_sidebar_state="auto",
-        menu_items={
-            'About': f"{about_message}"
-        }
-    )
+# def page_config():
+#     st.set_page_config(
+#         page_title="Cooking Assistant",
+#         page_icon="🍳",
+#         layout="centered",
+#         initial_sidebar_state="auto",
+#         menu_items={
+#             'About': f"{about_message}"
+#         }
+#     )
 
 # === PAGE 3 : Chatbot ===
 # def chatbot():
