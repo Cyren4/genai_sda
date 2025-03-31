@@ -13,11 +13,11 @@ def main():
     display_header()
     # === BARRE DE NAVIGATION ===
     st.sidebar.title("Navigation")
-    main_page = st.sidebar.radio("Select a section",
-                                  ["🍲 Introduction to Cooking Assistant",
-                                   "🔍 RAG Implementation and Culinary Data",
-                                   "🍳 Chat with the Cooking Assistant!",
-                                   "🏗️ Architecture of the Cooking Assistant"])
+    main_page = st.sidebar.radio("Sélectionne une page",
+                                  ["🍲 Introduction de Cooking AI",
+                                   "🔍 Implémentation RAG et Données Culinaires",
+                                   "🍳 Chat avec Cooking AI!",
+                                   "🏗️ Architecture de Cooking AI"])
     # select_page(main_page, run_ID)
     select_page(main_page)
     # display_contributor()

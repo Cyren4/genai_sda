@@ -1,42 +1,43 @@
 import streamlit as st
 # Import custom components
-from components.header import  display_contributor
+from components.header import display_contributor
+
 
 # === PAGE 1 : INTRODUCTION ===
 def introduction():
-    """Displays the INTRODUCTION page of the app."""
+    """Affiche la page d'INTRODUCTION de l'application."""
 
-    st.header("🍲 Welcome to the Cooking Assistant!")
+    st.header("🍲 Bienvenue sur Cooking AI !")
 
     st.markdown("""
-    ### **📌 Context**
-    Cooking can be a delightful journey, but it can also be challenging to find the right recipes, understand cooking techniques, or figure out what to make with the ingredients you have. That's where our Cooking Assistant comes in!
+    ### **📌 Contexte**
+    Cuisiner peut être un voyage délicieux, mais il peut aussi être difficile de trouver les bonnes recettes, de comprendre les techniques de cuisine ou de savoir quoi préparer avec les ingrédients dont vous disposez. C'est là que notre Assistant de Cuisine entre en jeu !
 
-    ### **🎯 Objective**
-    Our goal is to create a specialized chatbot that can:
-    - Answer questions about specific recipes.
-    - Recommend recipes based on user preferences and dietary restrictions.
-    - Discuss cooking techniques, ingredients, and cuisines.
-    - Provide insights into the culinary world.
-
-    ---
-
-    ### **⚙️ How it Works: RAG (Retrieval-Augmented Generation)**
-    This chatbot is powered by RAG, a cutting-edge AI technique that combines the strengths of:
-    - **Retrieval:** Searching a knowledge base for relevant recipes and cooking information.
-    - **Generation:** Using a language model to create human-like responses and recipe suggestions.
-
-    By grounding its responses in real-world data, the chatbot can provide accurate and informative answers.
+    ### **🎯 Objectif**
+    Notre objectif est de créer un chatbot spécialisé capable de :
+    - Répondre aux questions sur des recettes spécifiques.
+    - Recommander des recettes en fonction des préférences des utilisateurs et des restrictions alimentaires.
+    - Discuter des techniques de cuisine, des ingrédients et des cuisines.
+    - Fournir des informations sur le monde culinaire.
 
     ---
 
-    ### **🛠️ Our Approach**
-    We are using a combination of state-of-the-art techniques, including:
+    ### **⚙️ Comment ça Marche : RAG (Génération Augmentée par Récupération)**
+    Ce chatbot est alimenté par RAG, une technique d'IA de pointe qui combine les forces de :
+    - **Récupération :** Recherche dans une base de connaissances de recettes pertinentes et d'informations culinaires.
+    - **Génération :** Utilisation d'un modèle de langage pour créer des réponses et des suggestions de recettes.
 
-    - **Large Language Models (LLMs):** To understand and generate human-like text.
-    - **Vector Databases:** To store and efficiently retrieve information about recipes and cooking techniques.
-    - **Web Scraping (Potentially):** To gather data from cooking websites and recipe databases.
+    En basant ses réponses sur des données du monde réel, le chatbot peut fournir des réponses précises et informatives.
 
-    Explore the different sections of our application to see the Cooking Assistant in action! 🚀
+    ---
+
+    ### **🛠️ Notre Approche**
+    Nous utilisons une combinaison de techniques de pointe, notamment :
+
+    - **Large Language Model (LLM) :** Pour comprendre et générer du texte de type humain.
+    - **Bases de Données Vectorielles :** Pour stocker et récupérer efficacement des informations sur les recettes et les techniques de cuisine que vous souhaitez.
+    - **Web Scraping :** Pour collecter des données à partir de sites web de cuisine et de bases de données de recettes.
+
+    Explorez les différentes sections de notre application pour voir l'Assistant de Cuisine en action ! 🚀
     """)
     display_contributor()

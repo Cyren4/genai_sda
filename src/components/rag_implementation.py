@@ -1,39 +1,39 @@
 import streamlit as st
 
-# === PAGE 2 : RAG Implementation ===
+# === PAGE 2 : Implémentation RAG ===
 def rag_implementation():
-    """Displays the rag page of the app."""
+    """Affiche la page d'implémentation RAG de l'application."""
 
-    st.header("🔍 RAG Implementation and Culinary Data")
+    st.header("🔍 Implémentation RAG et Données Culinaires")
     st.markdown("""
-    ### **📌 Context**
-    This section delves into how we've implemented Retrieval-Augmented Generation (RAG) to power our Cooking Assistant. RAG allows the chatbot to access and utilize a vast knowledge base of culinary information, ensuring that its responses are accurate, relevant, and informative.
+    ### **📌 Contexte**
+    Cette section explore comment nous avons implémenté la Génération Augmentée par Récupération (RAG) pour alimenter notre Assistant de Cuisine. RAG permet au chatbot d'accéder et d'utiliser une vaste base de connaissances d'informations culinaires, garantissant que ses réponses sont précises, pertinentes et informatives.
 
-    ### **🎯 Objective**
-    Our primary goal with RAG is to enhance the chatbot's ability to:
-    - Retrieve specific recipes and cooking techniques.
-    - Understand user queries related to ingredients, cuisines, and dietary restrictions.
-    - Generate helpful and contextually appropriate responses.
-
-    ---
-
-    ### **⚙️ How it Works**
-    The RAG implementation involves several key steps:
-    1. **Data Ingestion:** We gather data from various sources, including recipe websites, cooking blogs, and culinary databases.
-    2. **Data Preprocessing:** The collected data is cleaned, formatted, and structured for efficient retrieval.
-    3. **Vectorization:** We use advanced techniques to convert the text data into numerical vectors, allowing for semantic similarity searches.
-    4. **Vector Database:** The vectorized data is stored in a specialized vector database, enabling fast and accurate retrieval.
-    5. **Retrieval:** When a user asks a question, the system retrieves the most relevant information from the vector database.
-    6. **Generation:** The retrieved information is then fed into a Large Language Model (LLM), which generates a coherent and informative response.
+    ### **🎯 Objectif**
+    Notre objectif principal avec RAG est d'améliorer la capacité du chatbot à :
+    - Récupérer des recettes et des techniques de cuisine spécifiques.
+    - Comprendre les requêtes des utilisateurs relatives aux ingrédients, aux cuisines et aux restrictions alimentaires.
+    - Générer des réponses utiles et contextuellement appropriées.
 
     ---
 
-    ### **🛠️ Our Approach**
-    We are using a combination of state-of-the-art techniques, including:
+    ### **⚙️ Comment ça Marche**
+    L'implémentation RAG implique plusieurs étapes clés :
+    1. **Ingestion des Données :** Nous collectons des données à partir du site marmiton, a l'aide d'un cooking scrapper qui scrape +460 site de cuisine.
+    2. **Prétraitement des Données :** Les données collectées sont nettoyées, formatées et structurées en json pour une récupération efficace. Puis divise en chunk sans couper leur structure initiale.
+    3. **Vectorisation :**  Nous avons essaye plusieurs techniques de vectorisation, nous avons choisis **text-embedding-004** avec un task type = **semantic_similarity** permettant des recherches de similarité sémantique.
+    4. **Base de Données Vectorielle :** Les données vectorisées sont stockées dans une base de données **Chroma** qui est persistante.
+    5. **Récupération :** Lorsqu'un utilisateur pose une question, le système récupère les informations les plus pertinentes de la base de données vectorielle puis les integre dans un prompt specifique a la cuisine.
+    6. **Génération :** Les informations récupérées sont ensuite transmises à un Grand Modèle de Langage (LLM), qui génère une réponse cohérente et informative.
 
-    - **Large Language Models (LLMs):** To understand and generate human-like text.
-    - **Vector Databases:** To store and efficiently retrieve information about recipes and cooking techniques.
-    - **Web Scraping (Potentially):** To gather data from cooking websites and recipe databases.
+    ---
 
-    Explore the different sections of our application to see the Cooking Assistant in action! 🚀
+    ### **🛠️ Notre Approche**
+    Nous utilisons une combinaison de techniques, notamment :
+
+    - **Large Langage Model (LLM) :** gemini-2.0-flash, Mistral
+    - **Bases de Données Vectorielles :** ChromaDB, Pinecone, Weaviate
+    - **Web Scraping (Potentiellement) :** Pour collecter des données à partir de sites web de cuisine et de bases de données de recettes.
+
+    Explorez les différentes sections de notre application pour voir l'Assistant de Cuisine en action ! 🚀
     """)

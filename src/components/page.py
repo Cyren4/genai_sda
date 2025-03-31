@@ -10,24 +10,16 @@ from components.architecture import architecture
 
 def select_page(page):
     """
-    Selects and displays the appropriate page content based on the user's selection.
-
-    This function acts as a router, directing the user to the correct section of the application
-    based on their choice from the sidebar or navigation menu. It dynamically calls the relevant
-    function to render the content for each page.
-
-    Args:
-        page (str): The name of the page selected by the user.
-
+    Sélectionne et affiche le contenu de la page appropriée en fonction de la sélection de l'utilisateur.
     """
-    # Get dynamic path
+    # Obtenir le chemin dynamique
     pwd = os.getcwd()
 
-    if page == "🍲 Introduction to Cooking Assistant":
+    if page == "🍲 Introduction de Cooking AI":
         introduction()
-    elif page == "🔍 RAG Implementation and Culinary Data":
-        rag_implementation()
-    elif page == "🍳 Chat with the Cooking Assistant!":
+    elif page == "🔍 Implémentation RAG et Données Culinaires":
+        rag_implementation() 
+    elif page == "🍳 Chat avec Cooking AI!":
         chatbot()
-    elif page == "🏗️ Architecture of the Cooking Assistant":
+    elif page == "🏗️ Architecture de Cooking AI":
         architecture()

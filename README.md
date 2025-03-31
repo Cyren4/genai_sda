@@ -24,9 +24,9 @@ cd genai_sda
 
 2.  Activate virtual env
 ```shell
-conda env create -f environment.yml
-conda activate genai-rag
-conda env update --file environment.yml --name genai-rag --prune 
+python -m venv genai_env
+source genai_env/bin/activate
+pip install -r requirements.txt
 
 ```
 
@@ -43,6 +43,21 @@ streamlit run src/app.py
 └── .gitignore
 ```
 
+## How it Works
+
+The app as follows:
+
+1. The user enters a question in the input field.
+
+2. User messages are sent to the Gemini model for processing.
+
+3. The user's input, along with the chat history, is used to generate a response.
+
+4. The Gemini model generates a response based on the patterns it learned during training.
+
+5. The application saves chat messages and Gemini AI chat history to files for later retrieval.
+
+6. A new chat is created if the user initiates a conversation that hasn't been stored before, or user can go back to past chats.
 
 **Next Steps**
 
@@ -67,4 +82,5 @@ This project is a student project fulfilling the requirements of a GenAI Course.
 - [Gemini embedding](https://ai.google.dev/gemini-api/docs/models#text-embedding)
 - [Json chunk](https://python.langchain.com/docs/how_to/recursive_json_splitter/)
 - [BM25s](https://huggingface.co/blog/xhluca/bm25s)
+- [python env](https://ithy.com/article/introduction-to-using-google-genai-library-18gdcoky#:~:text=Before%20you%20begin%2C%20ensure%20you,3.7%20or%20higher%20is%20required.)
 
