@@ -14,7 +14,7 @@ dependencies:
       - streamlit
       - beautifulsoup4 # For web scraping (if needed)
       - requests # For web scraping (if needed)
-      # - chromadb # or another vector database
+      - chromadb # or another vector database
       - recipe-scrapers
       - flask
       - bs4
@@ -26,3 +26,4 @@ dependencies:
       - google.genai
       - python-dotenv
       - google-generativeai
+      - tiktoken
