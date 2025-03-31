@@ -1,4 +1,4 @@
-# Webtoon Chatbot: Your Guide to the World of Webtoons
+# Cooking Chatbot: Your Guide to the World of lazy cooking
 
 **Context:**
 
@@ -65,3 +65,6 @@ This project is a student project fulfilling the requirements of a GenAI Course.
 
 - [Marmiton scrapper](https://github.com/remaudcorentin-dev/python-marmiton/tree/master)
 - [Gemini embedding](https://ai.google.dev/gemini-api/docs/models#text-embedding)
+- [Json chunk](https://python.langchain.com/docs/how_to/recursive_json_splitter/)
+- [BM25s](https://huggingface.co/blog/xhluca/bm25s)
+
