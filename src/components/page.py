@@ -5,8 +5,6 @@ from components.rag_implementation import rag_implementation
 from components.chatbot import chatbot
 from components.architecture import architecture
 
-#
-
 
 def select_page(page):
     """

@@ -15,29 +15,27 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 # --- Configuration ChromaDB ---
 pwd = os.getcwd()
-CHROMA_DB_PATH = f"{pwd}/data/chroma2" # Assurez-vous que ce chemin est correct
-COLLECTION_NAME = "marmiton"         # Remplacez par le nom de votre collection
+CHROMA_DB_PATH = f"{pwd}/data/chroma2"
+COLLECTION_NAME = "marmiton" 
 
 
-
-
+# --- Configuration fonction d'embedding ---
 class GoogleEmbeddingFunction(EmbeddingFunction):
   def __call__(self, input: Documents) -> Embeddings:
     model = 'models/text-embedding-004'
-    title = "Custom query"
+    # title = "Custom query"
     return genai.embed_content(model=model,
                                 content=input,
-                                task_type="retrieval_document",
-                                title=title)["embedding"]
+                                task_type="semantic_similarity"  #retrieval_document,
+                                # title=title
+                                )["embedding"]
 
-# --- Initialisation ChromaDB (essayer une seule fois) ---
+# --- Initialisation ChromaDB  ---
 @st.cache_resource
 def get_chroma_collection():
     try:
-        # !!! IMPORTANT: Assurez-vous que 'models/text-embedding-004' est bien le modèle
-        # !!! utilisé pour créer la base de données (qui produit 768 dimensions).
-        # !!! Si vous avez utilisé un autre modèle (ex: sentence-transformer),
-        # !!! il faudra utiliser l'intégration correspondante.
+        # modele bd = 'models/text-embedding-004'  (768 dimensions).
+        # to update si autre modèle
         google_ef = GoogleEmbeddingFunction(api_key=GOOGLE_API_KEY, model_name="models/text-embedding-004")
 
         client = PersistentClient(path=CHROMA_DB_PATH)
@@ -45,23 +43,21 @@ def get_chroma_collection():
         # Passer la fonction d'embedding lors de la récupération de la collection
         db = client.get_collection(
             name=COLLECTION_NAME,
-            embedding_function=google_ef # <-- ICI L'AJOUT IMPORTANT
+            embedding_function=google_ef 
         )
 
-        print(f"Successfully connected to ChromaDB collection: {COLLECTION_NAME} using Google Embeddings (768 dim)")
+        print(f"Successfully connected to ChromaDB collection: {COLLECTION_NAME} using Google Embeddings 004 (768 dim)")
         return db
     except Exception as e:
         st.error(f"Failed to connect to ChromaDB with specified embedding function: {e}")
         print(f"Error connecting to ChromaDB: {e}")
         st.stop()
 
-# Le reste de votre code...
-# db = get_chroma_collection() # Cette ligne appelle la fonction modifiée
 
 db = get_chroma_collection()
 
-# --- Fonctions RAG ---
-def get_relevant_passage(query, db, n_results=1):
+# updater n_results si on veut plus de resultats
+def get_relevant_passage(query, db, n_results=4):
     """Récupère le passage le plus pertinent depuis ChromaDB."""
     if db is None:
         return "Erreur: La base de données ChromaDB n'est pas disponible."
@@ -70,7 +66,7 @@ def get_relevant_passage(query, db, n_results=1):
         if results and results.get('documents') and results['documents'][0]:
             return results['documents'][0][0]
         else:
-            return "Aucun passage pertinent trouvé dans la base de données." # Ou retourner None/chaîne vide
+            return "Aucun passage pertinent trouvé dans la base de données."
     except Exception as e:
         print(f"Error querying ChromaDB: {e}")
         return f"Erreur lors de la recherche dans ChromaDB: {e}"

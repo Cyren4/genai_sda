@@ -19,7 +19,7 @@ Veuillez inclure les informations suivantes lorsque vous contactez le support :
 """
 
 def display_header():
-    st.title("🍳 Cooking AI : Guide pour les cuistots du dimanche")
+    st.header("🍳 Cooking AI : Guide pour les cuistots du dimanche")
 
 def display_contributor():
     """Affiche la section des contributeurs de l'application."""
@@ -31,17 +31,6 @@ def display_contributor():
     - *Yoav COHEN*
     """)
 
-# Configuration de la page
-# def page_config():
-#     st.set_page_config(
-#         page_title="Cooking Assistant",
-#         page_icon="🍳",
-#         layout="centered",
-#         initial_sidebar_state="auto",
-#         menu_items={
-#             'About': f"{about_message}"
-#         }
-#     )
 
 # === PAGE 3 : Chatbot ===
 # def chatbot():

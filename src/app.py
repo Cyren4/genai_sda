@@ -24,16 +24,15 @@ def main():
     select_page(main_page)
     # display_contributor()
 
-
 if __name__ == "__main__":
-    st.set_page_config(
-        page_title="Cooking Assistant",
-        page_icon="🍳",
-        layout="centered",
-        initial_sidebar_state="auto",
-        menu_items={
-            'About': f"{about_message}" 
-        }
-    )
+    # st.set_page_config(
+    #     page_title="Cooking Assistant",
+    #     page_icon="🍳",
+    #     layout="centered",
+    #     initial_sidebar_state="auto",
+    #     menu_items={
+    #         'About': f"{about_message}" 
+    #     }
+    # )
     main()
 
