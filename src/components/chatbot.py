@@ -66,7 +66,7 @@ def chatbot():
             )
         # Save new chats after a message has been sent to AI
         # TODO: Give user a chance to name chat
-        st.session_state.chat_title = f'Cooking Session : {st.session_state.chat_id}
+        st.session_state.chat_title = f'Cooking Session : {st.session_state.chat_id}'
 
 
     # Chat history (allows to ask multiple questions)
