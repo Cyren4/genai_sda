@@ -1,3 +1,5 @@
+# src/components/chatbot.py
+
 import time
 import os
 import joblib
@@ -5,103 +7,151 @@ import streamlit as st
 import google.generativeai as genai
 from dotenv import load_dotenv
 from datetime import datetime
-from chromadb import PersistentClient,EmbeddingFunction, Documents, Embeddings
-from markdown import markdown 
+from chromadb import PersistentClient
+import traceback
+from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
+from markdown import markdown
 
 # --- Configuration ---
 load_dotenv()
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
+
+if not GOOGLE_API_KEY:
+    st.error("Clé API Google non trouvée. Veuillez la définir dans vos variables d'environnement (GOOGLE_API_KEY).")
+    st.stop()
+
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # --- Configuration ChromaDB ---
 pwd = os.getcwd()
-CHROMA_DB_PATH = f"{pwd}/data/chroma_db_recipes"
-COLLECTION_NAME = "marmiton_recipes" 
-
+CHROMA_DB_PATH = os.path.join(pwd, "data", "chroma_db_recipes")
+COLLECTION_NAME = "marmiton_recipes"
+EMBEDDING_MODEL = 'models/text-embedding-004' # Modèle utilisé pour les embeddings
 
 # --- Configuration fonction d'embedding ---
 class GoogleEmbeddingFunction(EmbeddingFunction):
-  def __call__(self, input: Documents) -> Embeddings:
-    model = 'models/text-embedding-004'
-    return genai.embed_content(model=model,
-                                content=input,
-                                task_type="retrieval_document"   #retrieval_document ou semantic_similarity
-                                )["embedding"]
+    """Fonction d'embedding personnalisée pour Google GenAI."""
+    def __call__(self, input: Documents) -> Embeddings:
+        try:
+            response = genai.embed_content(model=EMBEDDING_MODEL,
+                                           content=input,
+                                           task_type="retrieval_document") 
+            if 'embedding' not in response:
+                print(f"Error: 'embedding' key not found in response for input: {input[:50]}...") # Log partiel
+                return [None] * len(input)
+            return response['embedding']
+        except Exception as e:
+            print(f"Error during embedding generation: {e}")
+            return [None] * len(input)
 
-# --- Initialisation ChromaDB  ---
+
+# --- Initialisation ChromaDB ---
 @st.cache_resource
 def get_chroma_collection():
+    """Charge ou crée la collection ChromaDB avec la fonction d'embedding Google."""
     try:
-        # modele bd = 'models/text-embedding-004'  (768 dimensions).
-        # to update si autre modèle
-        google_ef = GoogleEmbeddingFunction(api_key=GOOGLE_API_KEY, model_name="models/text-embedding-004")
-
+        google_ef = GoogleEmbeddingFunction() # Instanciation simple
         client = PersistentClient(path=CHROMA_DB_PATH)
 
-        # Passer la fonction d'embedding lors de la récupération de la collection
         db = client.get_collection(
             name=COLLECTION_NAME,
-            embedding_function=google_ef 
+            embedding_function=google_ef # Fournir l'instance
         )
 
-        print(f"Successfully connected to ChromaDB collection: {COLLECTION_NAME} using Google Embeddings 004 (768 dim)")
+        print(f"Successfully connected to ChromaDB collection: {COLLECTION_NAME}")
         return db
     except Exception as e:
-        st.error(f"Failed to connect to ChromaDB with specified embedding function: {e}")
+        st.error(f"Failed to connect to ChromaDB collection '{COLLECTION_NAME}': {e}")
         print(f"Error connecting to ChromaDB: {e}")
-        st.stop()
-
+        st.stop() # Arrêter l'exécution si la DB n'est pas accessible
 
 db = get_chroma_collection()
 
-# updater n_results si on veut plus de resultats
-def get_relevant_passage(query, db, n_results=1):
-    """Récupère le passage le plus pertinent depuis ChromaDB."""
+# --- Fonctions RAG ---
+
+def get_relevant_passages(query, db, n_results=3):
+    """Récupère les N passages les plus pertinents depuis ChromaDB."""
     if db is None:
-        return "Erreur: La base de données ChromaDB n'est pas disponible."
+        st.error("Erreur: La base de données ChromaDB n'est pas disponible.")
+        return [], [] # Retourne des listes vides pour éviter des erreurs en aval
     try:
-        results = db.query(query_texts=[query], n_results=n_results)
+        query_embedding = genai.embed_content(model=EMBEDDING_MODEL,
+                                              content=query,
+                                              task_type="retrieval_query")['embedding']
+
+        results = db.query(
+            query_embeddings=[query_embedding], # Utilise l'embedding de la question
+            n_results=n_results,
+            include=['documents', 'metadatas', 'distances'] # Inclure documents, métadonnées et distances
+        )
+
+        # Vérifier la structure des résultats
         if results and results.get('documents') and results['documents'][0]:
-            return results['documents'][0][0]
+            documents = results['documents'][0]
+            metadatas = results['metadatas'][0] if results.get('metadatas') else [{}] * len(documents)
+            distances = results['distances'][0] if results.get('distances') else [None] * len(documents)
+
+            print(f"Found {len(documents)} relevant passages.")
+            return documents, metadatas, distances # Retourne la liste des documents et leurs métadonnées
         else:
-            return "Aucun passage pertinent trouvé dans la base de données."
+            print("No relevant passages found in the database.")
+            return [], []
     except Exception as e:
+        st.error(f"Erreur lors de la recherche dans ChromaDB: {e}")
         print(f"Error querying ChromaDB: {e}")
-        return f"Erreur lors de la recherche dans ChromaDB: {e}"
+        return [], []
 
-def cook_prompt(query, relevant_passage, history):
-    """Construit le prompt pour le modèle GenAI en utilisant le contexte RAG et l'historique."""
-    escaped_passage = relevant_passage.replace("'", "").replace('"', "").replace("\n", " ")
+def cook_prompt_with_context_and_history(query, relevant_passages, history):
+    """Construit le prompt pour Gemini en utilisant RAG (multiples passages) et l'historique."""
 
-    # Formatage simple de l'historique
+    # Formatage de l'historique
     formatted_history = "\n".join([f"{msg['role']}: {msg['content']}" for msg in history])
 
+    # Formatage des passages pertinents
+    context_str = ""
+    if relevant_passages:
+        context_str = "Voici des extraits de recettes qui pourraient être utiles:\n\n"
+        for i, passage in enumerate(relevant_passages):
+            escaped_passage = passage.replace("\n", " ")
+            context_str += f"--- Recette Pertinente {i+1} ---\n{escaped_passage}\n\n"
+    else:
+        context_str = "Aucune recette spécifique trouvée dans la base de données pour cette question.\n"
+
+    # Construction du prompt final
     prompt = f"""Historique de la conversation:
 {formatted_history}
 
 ----
-Parlons cuisine ! Tu es mon assistant culinaire amical et serviable.
-Base-toi UNIQUEMENT sur le PASSAGE suivant pour répondre à la QUESTION. Si le passage ne contient pas la réponse, indique que tu ne peux pas répondre avec les informations fournies. Ne mentionne pas explicitement le "PASSAGE" dans ta réponse finale. Donne autant de détails que possible issus du passage.
+CONTEXTE FOURNI:
+{context_str}
+----
 
-PASSAGE: '{escaped_passage}'
+INSTRUCTIONS:
+Tu es mon assistant culinaire Cooking AI, amical et serviable.
+En te basant **uniquement** sur l'HISTORIQUE de la conversation et le CONTEXTE FOURNI ci-dessus, réponds à la dernière QUESTION de l'utilisateur.
+Si le contexte ne contient pas la réponse ou n'est pas pertinent, indique que les informations fournies ne permettent pas de répondre précisément
+mais essaie quand même d'aider en te basant sur l'historique si possible.
+Ne mentionne PAS explicitement le "CONTEXTE FOURNI" ou les "Recettes Pertinentes" dans ta réponse finale, intègre l'information naturellement.
+Sois détaillé et clair. Si tu utilises des informations d'une recette spécifique du contexte, tu peux mentionner son nom si disponible dans le contexte.
+Donne moi plus details et retourne toute la recette en entier UNIQUEMENT si je le demande.
 
 QUESTION: '{query}'
 
-ANSWER:
+RÉPONSE:
 """
     return prompt
 
 # --- Fonction Principale du Chatbot ---
-def chatbot():
-    # Get the current date
+def chatbot(): 
+    """Affiche le composant chatbot dans Streamlit."""
+    st.caption("Votre guide pour les cuistots du dimanche !")
+
+    # --- Gestion de l'historique des chats (identique à votre code) ---
     now = datetime.now()
-    date_str = now.strftime("%d-%m-%Y") # Format: DDMMYYYY
-
-    # Create a chat_data/ folder if it doesn't already exist
+    date_str = now.strftime("%d-%m-%Y")
     chat_data_dir = 'chat_data'
-    os.makedirs(chat_data_dir, exist_ok=True) # Plus sûr que try/except
+    os.makedirs(chat_data_dir, exist_ok=True)
 
-    # Load past chats list (if available)
     past_chats_path = os.path.join(chat_data_dir, 'past_chats_list')
     try:
         past_chats: dict = joblib.load(past_chats_path)
@@ -111,217 +161,221 @@ def chatbot():
         st.error(f"Erreur lors du chargement de la liste des chats: {e}")
         past_chats = {}
 
-
-    # Trouver le prochain numéro incrémental pour la date actuelle (logique simplifiée)
-    # Attention: cette logique peut avoir des collisions si l'app redémarre vite.
-    # Une approche plus robuste pourrait utiliser des timestamps ou UUIDs.
-    # La logique originale est conservée pour la démonstration.
     max_incremental = -1
     today_chats_count = 0
     for chat_id in past_chats.keys():
         if chat_id.startswith(date_str):
             today_chats_count += 1
             try:
-                # Extrait le numéro après '#' s'il existe
                 parts = chat_id.split('#')
                 if len(parts) > 1:
-                   incremental = int(parts[1])
-                   max_incremental = max(max_incremental, incremental)
+                    incremental = int(parts[1])
+                    max_incremental = max(max_incremental, incremental)
             except (IndexError, ValueError):
-                 pass # Ignore les chat_ids mal formés
+                pass
 
-    # Si aucun chat aujourd'hui, commence à 0, sinon prend le max + 1
-    # Si des chats existent mais sans '#', on compte juste et on met max+1
-    if today_chats_count > 0 and max_incremental == -1 : # Chats existent mais sans '#'
-         next_incremental = today_chats_count
+    if today_chats_count > 0 and max_incremental == -1 :
+        next_incremental = today_chats_count
     else:
-         next_incremental = max_incremental + 1
+        next_incremental = max_incremental + 1
 
-    new_chat_id = f'{date_str} #{next_incremental:02d}' # Format: DD-MM-YYYY #00
+    new_chat_id = f'{date_str} #{next_incremental:02d}'
 
+    MODEL_ROLE = 'assistant' # Gemini utilise souvent 'model' ou 'assistant'
+    USER_ROLE = 'user'
+    AI_AVATAR_ICON = '🍳'
 
-    MODEL_ROLE = 'ai'
-    AI_AVATAR_ICON = '🍳' # Changé pour un thème cuisine
-
-    # Sidebar pour la liste des chats passés
     with st.sidebar:
         st.write('# Sessions de Cuisine Passées')
+        options = [new_chat_id] + sorted(list(past_chats.keys()), reverse=True)
 
-        # Construction des options pour selectbox
-        options = [new_chat_id] + sorted(list(past_chats.keys()), reverse=True) # Trié par date/numéro descendant
-
-        # Détermine l'index sélectionné
-        selected_index = 0 # Par défaut: Nouveau Chat
+        selected_index = 0
         if 'chat_id' in st.session_state and st.session_state.chat_id in options:
-             # Si un chat ID existe déjà et est valide, le sélectionner
-             try:
-                 selected_index = options.index(st.session_state.chat_id)
-             except ValueError:
-                 # Si l'ID sauvegardé n'est plus dans les options (peu probable), revient au nouveau chat
-                 st.session_state.chat_id = new_chat_id
-                 selected_index = 0
+            try:
+                selected_index = options.index(st.session_state.chat_id)
+            except ValueError:
+                st.session_state.chat_id = new_chat_id
+                selected_index = 0
         elif 'chat_id' not in st.session_state :
-             # Premier chargement, initialise avec new_chat_id
-             st.session_state.chat_id = new_chat_id
-             selected_index = 0
+            st.session_state.chat_id = new_chat_id
+            selected_index = 0
 
-
-        # Fonction pour formater l'affichage dans le selectbox
         def format_chat_option(chat_id):
             if chat_id == new_chat_id and chat_id not in past_chats:
                 return "✨ Nouvelle Session..."
-            # Essaye de récupérer le titre, sinon utilise l'ID
             return past_chats.get(chat_id, chat_id)
 
-
-        # Le selectbox
         selected_chat_id = st.selectbox(
             label='Choisissez une session',
             options=options,
             index=selected_index,
             format_func=format_chat_option,
-            key='chat_selector' # Ajout d'une clé explicite
+            key='chat_selector'
         )
 
-        # Met à jour le chat_id dans st.session_state SEULEMENT s'il change
         if selected_chat_id != st.session_state.get('chat_id'):
             st.session_state.chat_id = selected_chat_id
-            # Forcer le rechargement si l'ID change pour charger le bon historique
+            # Effacer les messages lors du changement de chat pour forcer le rechargement
+            if 'messages' in st.session_state:
+                del st.session_state['messages']
             st.rerun()
 
-
-        # Titre par défaut ou basé sur le premier message (ou laisser l'utilisateur nommer)
-        # Ici, on garde un titre simple basé sur l'ID pour l'instant
         st.session_state.chat_title = past_chats.get(st.session_state.chat_id, f'Session {st.session_state.chat_id}')
 
+        # --- Ajout du contrôle pour n_results ---
+        num_chunks = st.number_input(
+            "Nombre de recettes contextuelles (chunks) :",
+            min_value=1,
+            max_value=10, 
+            value=1,      
+            step=1,
+            key='num_chunks_selector', 
+            help="Combien de recettes similaires utiliser pour répondre à votre question."
+        )
+        st.session_state.n_results = num_chunks
 
-    # --- Chargement de l'historique du chat sélectionné ---
+
     messages_path = os.path.join(chat_data_dir, f'{st.session_state.chat_id}-st_messages')
-    try:
-        # Vérifie si le chat sélectionné est un nouveau chat qui n'a pas encore de fichier
-        if st.session_state.chat_id == new_chat_id and not os.path.exists(messages_path):
-             st.session_state.messages = []
-             print(f"Starting new chat: {st.session_state.chat_id}")
-        else:
-             st.session_state.messages = joblib.load(messages_path)
-             print(f"Loaded chat history for: {st.session_state.chat_id}")
-    except FileNotFoundError:
-         # Si on sélectionne un ancien chat dont le fichier a disparu
-         st.warning(f"Historique non trouvé pour {st.session_state.chat_id}. Un nouveau chat sera créé avec cet ID.")
-         st.session_state.messages = []
-         # Potentiellement retirer l'ID de past_chats s'il n'y a plus de fichier?
-    except Exception as e:
-        st.error(f"Erreur lors du chargement de l'historique du chat {st.session_state.chat_id}: {e}")
-        st.session_state.messages = [] # Recommence avec un historique vide en cas d'erreur
 
-    # Initialisation du modèle GenAI (peut être mis en cache aussi si nécessaire)
-    if 'model' not in st.session_state:
-        st.session_state.model = genai.GenerativeModel('gemini-1.5-flash') # Modèle cohérent avec l'exemple RAG
-        print("GenAI Model Initialized")
+    if 'messages' not in st.session_state:
+        print(f"Attempting to load messages for {st.session_state.chat_id} from {messages_path}")
+        try:
+            st.session_state.messages = joblib.load(messages_path)
+            print(f"Loaded {len(st.session_state.messages)} messages for chat {st.session_state.chat_id}")
+        except FileNotFoundError:
+            print(f"No history file found for {st.session_state.chat_id}. Starting new history.")
+            st.session_state.messages = [] # Commence un nouvel historique si fichier non trouvé
+        except Exception as e:
+            st.error(f"Erreur lors du chargement de l'historique pour {st.session_state.chat_id}: {e}")
+            st.session_state.messages = []
 
+    # Initialisation du modèle Gemini (mis en cache implicitement par Streamlit via session_state)
+    if 'gemini_model' not in st.session_state:
+        try:
+             # Utiliser gemini-1.5-flash ou gemini-pro selon disponibilité/préférence
+            st.session_state.gemini_model = genai.GenerativeModel('gemini-2.0-flash')
+            print("Gemini Model Initialized (gemini-2.0-flash)")
+        except Exception as e:
+            st.error(f"Impossible d'initialiser le modèle Gemini : {e}")
+            st.stop()
 
-    # Affichage des messages de l'historique
-    for message in st.session_state.get('messages', []): # Utilise .get pour éviter erreur si 'messages' n'existe pas encore
+    # Affichage des messages de l'historique (depuis st.session_state.messages)
+    for message in st.session_state.get('messages', []):
+        role = message.get('role')
         avatar = message.get('avatar')
-        with st.chat_message(name=message['role'], avatar=avatar):
-            st.markdown(message['content'])
+        # Assurer la compatibilité : Gemini utilise 'user' et 'model'
+        display_role = 'assistant' if role == MODEL_ROLE else role # Afficher 'assistant' pour le modèle
+        if role and message.get('content'): # Vérifier que role et content existent
+             with st.chat_message(name=display_role, avatar=avatar):
+                st.markdown(message['content'])
 
     # --- Input utilisateur et logique RAG ---
     if prompt := st.chat_input('Posez-moi une question de cuisine...'):
-        # Sauvegarde l'ID et le titre du nouveau chat dès le premier message
-        is_new_chat = st.session_state.chat_id not in past_chats
-        if is_new_chat:
-            # Utilise un titre initial, pourrait être amélioré (ex: basé sur le premier prompt)
-            # Attention : S'assurer que le titre est défini avant de sauvegarder.
-            current_chat_title = f'Session {st.session_state.chat_id}' # Titre initial
+        is_new_chat = st.session_state.chat_id == new_chat_id and not os.path.exists(messages_path)
+
+        # Ajouter le nouveau chat à la liste si nécessaire
+        if st.session_state.chat_id not in past_chats:
+            current_chat_title = f'Session {st.session_state.chat_id}'
             st.session_state.chat_title = current_chat_title
             past_chats[st.session_state.chat_id] = current_chat_title
             try:
                 joblib.dump(past_chats, past_chats_path)
                 print(f"Saved new chat ID {st.session_state.chat_id} to list.")
             except Exception as e:
-                 st.error(f"Erreur lors de la sauvegarde de la liste des chats: {e}")
+                st.error(f"Erreur lors de la sauvegarde de la liste des chats: {e}")
 
-
-        # Afficher le message de l'utilisateur
-        with st.chat_message('user'):
+        # Afficher le message utilisateur et l'ajouter à l'historique de session
+        with st.chat_message(USER_ROLE):
             st.markdown(prompt)
-
-        # Ajouter le message utilisateur à l'historique de session Streamlit
-        st.session_state.messages.append(dict(role='user', content=prompt))
+        st.session_state.messages.append({"role": USER_ROLE, "content": prompt})
 
         # --- Étape RAG ---
-        st.write("👩‍🍳 Recherche d'informations pertinentes...") # Indicateur visuel
-        relevant_passage = get_relevant_passage(prompt, db)
-        st.write("✅ Informations trouvées!") # Ou un message d'erreur/avertissement si rien n'est trouvé
+        n_results = st.session_state.get('n_results', 3) # Récupérer la valeur depuis session_state
+        progress_bar = st.status(f"👩‍🍳 Recherche de {n_results} recette(s) pertinente(s)...")
+        relevant_passages, metadatas, distances = get_relevant_passages(prompt, db, n_results=n_results)
+        progress_bar.update(label="✅ Informations trouvées!" if relevant_passages else "⚠️ Aucune recette spécifique trouvée.")
 
-        # Construire le prompt RAG en utilisant l'historique actuel (avant la réponse de l'IA)
-        rag_prompt = cook_prompt(prompt, relevant_passage, st.session_state.messages)
-        # print("\n--- RAG PROMPT ---") # Pour débogage
-        # print(rag_prompt)
-        # print("--- END RAG PROMPT ---\n")
+        # Construire le prompt RAG en utilisant l'historique actuel (AVANT la réponse de l'IA)
+        gemini_history = [
+            {"role": "user" if msg["role"] == USER_ROLE else "model", "parts": [msg["content"]]}
+            for msg in st.session_state.messages if msg["role"] in [USER_ROLE, MODEL_ROLE]
+        ]
+        # Simplification: on utilise le prompt construit directement
+        final_prompt_text = cook_prompt_with_context_and_history(prompt, relevant_passages, st.session_state.messages)
 
         # --- Génération de la réponse IA ---
         try:
-            response = st.session_state.model.generate_content(rag_prompt, stream=True)
+            # print("\n--- FINAL PROMPT FOR GEMINI ---") # Pour débogage
+            # print(final_prompt_text)
+            # print("--- END FINAL PROMPT ---\n")
+
+            # Utiliser generate_content pour une requête unique (stateless)
+            response = st.session_state.gemini_model.generate_content(
+                 final_prompt_text,
+                 stream=True)
 
             # Afficher la réponse de l'IA en streaming
             with st.chat_message(name=MODEL_ROLE, avatar=AI_AVATAR_ICON):
                 message_placeholder = st.empty()
                 full_response_content = ''
-                # Itérer sur les chunks de la réponse streamée
                 for chunk in response:
-                     # Vérifier si le chunk contient du texte (pour éviter erreurs si chunk vide ou autre type)
-                     if hasattr(chunk, 'text'):
-                         # Simuler l'effet de frappe (optionnel)
-                         for word in chunk.text.split(' '):
-                             full_response_content += word + ' '
-                             time.sleep(0.05)
-                             message_placeholder.markdown(full_response_content + "▌") # Afficher avec curseur
-                     else:
-                         # Gérer le cas où un chunk n'a pas de 'text' (peut arriver en fin de stream ou erreur)
-                         print(f"Received chunk without text: {chunk}")
+                    # Gérer les erreurs potentielles dans le chunk (ex: blocage de sécurité)
+                    if not hasattr(chunk, 'text'):
+                         if hasattr(chunk, 'prompt_feedback') and chunk.prompt_feedback.block_reason:
+                             reason = chunk.prompt_feedback.block_reason
+                             error_msg = f"⚠️ Contenu bloqué par les filtres de sécurité ({reason}). Réessayez avec une autre formulation."
+                             print(error_msg)
+                             full_response_content = error_msg # Afficher l'erreur
+                             break # Sortir de la boucle de streaming
+                         else:
+                             print(f"Chunk non traité: {chunk}")
+                             continue # Ignorer les chunks sans texte ou erreur connue
 
-                # Afficher la réponse complète sans le curseur
-                message_placeholder.markdown(full_response_content.strip()) # .strip() pour enlever espace final
+                    word_list = chunk.text.split(' ')
+                    for word in word_list:
+                        full_response_content += word + ' '
+                        # time.sleep(0.05) # Simulation de frappe
+                        message_placeholder.markdown(full_response_content + "▌")
+                message_placeholder.markdown(full_response_content.strip()) # Affichage final
 
-            # Ajouter la réponse complète de l'IA à l'historique Streamlit
+            # Ajouter la réponse de l'IA à l'historique de session
             st.session_state.messages.append(
-                dict(
-                    role=MODEL_ROLE,
-                    content=full_response_content.strip(), # Utiliser le contenu accumulé
-                    avatar=AI_AVATAR_ICON,
-                )
+                {"role": MODEL_ROLE, "content": full_response_content.strip(), "avatar": AI_AVATAR_ICON}
             )
 
             # --- Sauvegarde de l'historique mis à jour ---
             try:
                 joblib.dump(st.session_state.messages, messages_path)
-                print(f"Saved updated chat history to: {messages_path}")
+                # print(f"Saved updated chat history to: {messages_path}")
             except Exception as e:
-                 st.error(f"Erreur lors de la sauvegarde de l'historique du chat: {e}")
+                st.error(f"Erreur lors de la sauvegarde de l'historique du chat: {e}")
 
-            # Si c'était un nouveau chat, et qu'on veut rafraichir la sidebar
-            # pour qu'il apparaisse correctement nommé et sélectionné.
+            # Afficher les sources utilisées dans un expander
+            if relevant_passages:
+                with st.expander("Sources utilisées pour la réponse"):
+                    for i, (doc, meta) in enumerate(zip(relevant_passages, metadatas)):
+                        title = meta.get('title', f'Source {i+1}') if meta else f'Source {i+1}'
+                        distance = distances[i] 
+                        st.info(f"**{title}** (Pertinence: {1-distance:.2f})\n\n_{doc[:250]}..._") # Affiche un aperçu
+
+
+            # Si c'était un nouveau chat, rerun pour mettre à jour le selectbox
             if is_new_chat:
-                # Mettre à jour l'état pour que le selectbox se mette à jour au prochain tour
                 st.rerun()
 
-
         except Exception as e:
-            st.error(f"Une erreur est survenue lors de la génération de la réponse: {e}")
-            print(f"Error during AI response generation: {e}")
-            # Optionnel : ajouter un message d'erreur à l'historique
-            st.session_state.messages.append(
-                 dict(
-                     role=MODEL_ROLE,
-                     content=f"Désolé, une erreur s'est produite: {e}",
-                     avatar=AI_AVATAR_ICON,
-                 )
-            )
-             # Essayer de sauvegarder même après l'erreur (pour conserver le prompt utilisateur)
-            try:
-                joblib.dump(st.session_state.messages, messages_path)
-            except Exception as save_e:
-                 st.error(f"Erreur critique : impossible de sauvegarder l'historique après l'échec de la génération: {save_e}")
+            print(f"Une erreur est survenue: {e}")
+            print("--- Traceback complet ---")
+            traceback.print_exc()
+            print("--- Fin Traceback ---")
+        #     st.error(f"Une erreur est survenue lors de la génération de la réponse Gemini: {e}")
+        #     print(f"Error during AI response generation: {e}")
+        #     # Ajouter un message d'erreur à l'historique
+        #     st.session_state.messages.append(
+        #         {"role": MODEL_ROLE, "content": f"Désolé, une erreur s'est produite: {e}", "avatar": AI_AVATAR_ICON}
+        #     )
+        #     try:
+        #         joblib.dump(st.session_state.messages, messages_path)
+        #     except Exception as save_e:
+        #         st.error(f"Erreur critique : impossible de sauvegarder l'historique après l'échec de la génération: {save_e}")
 

@@ -19,7 +19,7 @@ Veuillez inclure les informations suivantes lorsque vous contactez le support :
 """
 
 def display_header():
-    st.header("🍳 Cooking AI : Guide pour les cuistots du dimanche")
+    st.header("🍳 Cooking AI")
 
 def display_contributor():
     """Affiche la section des contributeurs de l'application."""
