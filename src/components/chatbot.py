@@ -15,19 +15,17 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 # --- Configuration ChromaDB ---
 pwd = os.getcwd()
-CHROMA_DB_PATH = f"{pwd}/data/chroma2"
-COLLECTION_NAME = "marmiton" 
+CHROMA_DB_PATH = f"{pwd}/data/chroma_db_recipes"
+COLLECTION_NAME = "marmiton_recipes" 
 
 
 # --- Configuration fonction d'embedding ---
 class GoogleEmbeddingFunction(EmbeddingFunction):
   def __call__(self, input: Documents) -> Embeddings:
     model = 'models/text-embedding-004'
-    # title = "Custom query"
     return genai.embed_content(model=model,
                                 content=input,
-                                task_type="semantic_similarity"  #retrieval_document,
-                                # title=title
+                                task_type="retrieval_document"   #retrieval_document ou semantic_similarity
                                 )["embedding"]
 
 # --- Initialisation ChromaDB  ---
@@ -57,7 +55,7 @@ def get_chroma_collection():
 db = get_chroma_collection()
 
 # updater n_results si on veut plus de resultats
-def get_relevant_passage(query, db, n_results=4):
+def get_relevant_passage(query, db, n_results=1):
     """Récupère le passage le plus pertinent depuis ChromaDB."""
     if db is None:
         return "Erreur: La base de données ChromaDB n'est pas disponible."
